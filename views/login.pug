@@ -1,0 +1,27 @@
+extends layout
+
+block content
+  .container.mt-5
+    h1 Login
+
+    .row
+      .col-sm-8
+        .card
+          .card-body
+
+            form(action="/login" method="POST")
+              .form-group
+                label(for="email") Email
+                input(type="email" class="form-control" name="username")
+
+              .form-group
+                label(for="password") Password
+                input.form-control(type="password" name="password")
+
+              button.btn.btn-dark(type="submit") Login
+
+        .card
+          .card-body
+            a.btn.btn-block(href="/auth/google" role="button")
+              i.fab.fa-google
+              p Sign In with Google

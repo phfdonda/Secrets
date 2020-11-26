@@ -3,6 +3,7 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const _ = require('lodash')
 const mongoose = require('mongoose')
+const encrypt = require('mongoose-encryption')
 const app = express()
 const serverURL = "mongodb+srv://m001-student:m001-mongodb-basics@sandbox.znb2f.mongodb.net/secretsDB"
 const mongooseSetting = {
@@ -24,11 +25,13 @@ app.use(express.static('public'))
 
 // GLOBAL VARIABLES ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 const validPaths = ['home','login','register','secrets','submit']
-const userSchema = {
+const userSchema = new mongoose.Schema({
   email: String,
   password: String
-}
+})
 const User = mongoose.model("User", userSchema)
+const secret = 'Thisisourlittlesecret!'
+userSchema.plugin(encrypt, {secret: secret, encryptedFields: ["password"]})
 
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 

@@ -4,9 +4,9 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const _ = require('lodash')
 const mongoose = require('mongoose')
-const encrypt = require('mongoose-encryption')
+const bcrypt = require('bcrypt')
 const app = express()
-const serverURL = process.env.SERVER_URL
+const serverURL = process.env.DB_URL
 const mongooseSetting = {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -31,7 +31,7 @@ const userSchema = new mongoose.Schema({
   password: String
 })
 const User = mongoose.model("User", userSchema)
-userSchema.plugin(encrypt, {secret: process.env.SECRET, encryptedFields: ["password"]})
+const saltRounds = 10
 
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
@@ -51,33 +51,38 @@ userSchema.plugin(encrypt, {secret: process.env.SECRET, encryptedFields: ["passw
 
 // POST REGISTER >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 app.post('/register', (req,res)=>{
-   User.create({
+  bcrypt.hash(req.body.password, saltRounds,(err, hash)=>{
+    User.create({
      email: req.body.username,
-     password: req.body.password
+     password: hash
    }, err =>{
      err ? res.send(err) :
       res.render('secrets')
    })
+  })
 })
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 // POST REGISTER >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 app.post('/login', (req,res)=>{
+  const password = req.body.password
    User.findOne({
      email: req.body.username,
    }, (err, foundUser) =>{
      if(err){res.send(err)} else
       if(foundUser){
-        if(foundUser.password === req.body.password){
-          res.render('secrets')
-        }else{
-          res.send('Wrong Password!')
-        }
-      }else{
-        res.send('No user registered with this email, try to Register')
+        bcrypt.compare(password, foundUser.password, (err, check)=>{
+          if(err){
+            res.send(err)
+          } else {
+            if(check){
+              res.render('secrets')
+            }
+          }
+        })
       }
    })
-})
+  })
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 // APP LISTEN ??????????????????????????????????????????????????????????????????

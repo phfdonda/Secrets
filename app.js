@@ -1,11 +1,12 @@
 // CONFIG  =====================================================================
+require('dotenv').config()
 const express = require('express')
 const bodyParser = require('body-parser')
 const _ = require('lodash')
 const mongoose = require('mongoose')
 const encrypt = require('mongoose-encryption')
 const app = express()
-const serverURL = "mongodb+srv://m001-student:m001-mongodb-basics@sandbox.znb2f.mongodb.net/secretsDB"
+const serverURL = process.env.SERVER_URL
 const mongooseSetting = {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -30,8 +31,7 @@ const userSchema = new mongoose.Schema({
   password: String
 })
 const User = mongoose.model("User", userSchema)
-const secret = 'Thisisourlittlesecret!'
-userSchema.plugin(encrypt, {secret: secret, encryptedFields: ["password"]})
+userSchema.plugin(encrypt, {secret: process.env.SECRET, encryptedFields: ["password"]})
 
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 

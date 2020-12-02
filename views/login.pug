@@ -4,7 +4,7 @@ block content
   .container.mt-5
     h1 Login
 
-    .row
+    .row.justify-content-center
       .col-sm-8
         .card
           .card-body
@@ -20,8 +20,12 @@ block content
 
               button.btn.btn-dark(type="submit") Login
 
-        .card
-          .card-body
-            a.btn.btn-block(href="/auth/google" role="button")
-              i.fab.fa-google
-              p Sign In with Google
+      .card
+        .card-body
+          a.btn.btn-block(href="/auth/google" role="button")
+            i.fab.fa-google
+            p Sign In with Google
+        .card-body
+          a.btn.btn-block(href="/auth/facebook" role="button")
+            i.fab.fa-facebook
+            p Sign In with Facebook
